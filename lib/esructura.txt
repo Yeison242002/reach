@@ -1,0 +1,32 @@
+/lib
+│
+├── main.dart                  # Punto de entrada de la app
+├── app/
+│   ├── app.dart               # Widget principal de la app (MaterialApp o CupertinoApp)
+│   └── routes.dart            # Definición de rutas de navegación
+│
+├── core/                      # Elementos base reutilizables
+│   ├── constants/             # Constantes de uso global (colores, textos, tamaños)
+│   ├── utils/                 # Utilidades, helpers, validaciones
+│   └── theme/                 # Temas (dark/light) y estilos globales
+│
+├── data/                      # Acceso a datos (API, local, Firebase, etc.)
+│   ├── models/                # Clases modelo (DTOs)
+│   ├── datasources/           # Fuente de datos (remota/local)
+│   └── repositories/          # Lógica para acceder a las fuentes de datos
+│
+├── domain/                   # (opcional, para arquitectura limpia)
+│   ├── entities/              # Entidades del dominio (más puras que los modelos)
+│   ├── repositories/          # Interfaces de los repositorios
+│   └── usecases/              # Casos de uso del negocio
+│
+├── presentation/             # Capa de UI
+│   ├── screens/               # Cada pantalla en su carpeta
+│   │   └── home/
+│   │       ├── home_screen.dart
+│   │       └── widgets/       # Widgets específicos de la pantalla
+│   ├── widgets/               # Widgets reutilizables en toda la app
+│   └── providers/             # Providers o blocs para manejar estado
+│
+├── services/                 # Servicios generales (Firebase, notificaciones, etc.)
+└── config/                   # Configuraciones de entorno, inyección de dependencias

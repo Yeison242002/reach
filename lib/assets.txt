@@ -1,0 +1,15 @@
+/assets
+│
+├── images/            # Imágenes generales
+│   ├── logo.png
+│   ├── background.jpg
+│   └── ...
+│
+├── icons/             # Íconos personalizados (SVG, PNG)
+│   └── home_icon.svg
+│
+├── animations/        # Lottie u otras animaciones
+│   └── loading.json
+│
+└── fonts/             # Fuentes personalizadas
+    └── OpenSans-Regular.ttf

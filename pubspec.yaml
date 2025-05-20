@@ -1,0 +1,28 @@
+name: reach
+description: "control electrico a distancia"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  fl_chart: ^0.64.0
+  syncfusion_flutter_gauges: ^23.1.36
+  cupertino_icons: ^1.0.8
+  firebase_core:
+  firebase_auth: ^5.5.3
+  cloud_firestore: ^5.6.7
+  firebase_database: ^11.3.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

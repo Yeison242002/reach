@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "741742004147",
+    "project_id": "reach-55adb",
+    "storage_bucket": "reach-55adb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741742004147:android:cc96cb270f0dc9e37e2dc6",
+        "android_client_info": {
+          "package_name": "com.example.reach"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZlTe2O7aMhKiem_0wSxwHielBJZUXyMA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
