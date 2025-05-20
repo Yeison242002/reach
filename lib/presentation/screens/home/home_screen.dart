@@ -16,7 +16,7 @@ class HomeScreen extends StatelessWidget {
             icon: const Icon(Icons.account_circle, color: Colors.white),
             onPressed: () {
               // Navegar a perfil si quieres
-              // Navigator.pushNamed(context, '/profile');
+               Navigator.pushNamed(context, '/profile');
             },
           ),
         ],

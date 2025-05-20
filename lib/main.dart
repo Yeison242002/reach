@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Mi App con Firebase',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/main', 
+      initialRoute: '/signin',
       routes: appRoutes,       
     );
   }

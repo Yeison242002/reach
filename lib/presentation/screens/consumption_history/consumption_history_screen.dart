@@ -4,39 +4,16 @@ import 'package:flutter/material.dart';
 class ConsumptionHistoryScreen extends StatelessWidget {
   const ConsumptionHistoryScreen({super.key});
 
-  void onDaySearch() {
-    // TODO: Implementar búsqueda por día
-    print('Buscar consumo por día');
-  }
-
-  void onMonthSearch() {
-    // TODO: Implementar búsqueda por mes
-    print('Buscar consumo por mes');
-  }
-
-  Widget buildHistogram({
-    required List<double> data,
-    required String title,
-    required double totalWatts,
-    required VoidCallback onSearchPressed,
-  }) {
+  Widget buildHistogram(List<double> data, String title, double totalWatts) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(title,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16)),
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.search, color: Colors.purpleAccent),
-              onPressed: onSearchPressed,
-            )
-          ],
-        ),
+        Text(title,
+            style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16)),
+        const SizedBox(height: 8),
         SizedBox(
           width: double.infinity,
           height: 150,
@@ -102,7 +79,9 @@ class ConsumptionHistoryScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF1E1E1E),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.purpleAccent),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         title: const Text('Historial',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -118,31 +97,13 @@ class ConsumptionHistoryScreen extends StatelessWidget {
         child: ListView(
           children: [
             buildHistogram(
-              data: [3, 4.5, 5.8, 6.2, 6, 5, 4.3],
-              title: 'Consumo hoy',
-              totalWatts: 76.90,
-              onSearchPressed: onDaySearch,
-            ),
+                [3, 4.5, 5.8, 6.2, 6, 5, 4.3], 'Consumo hoy', 76.90),
             buildHistogram(
-              data: [3, 4.5, 5.8, 6.2, 6, 5, 4.3],
-              title: 'Consumo este mes',
-              totalWatts: 300.90,
-              onSearchPressed: onMonthSearch,
-            ),
+                [3, 4.5, 5.8, 6.2, 6, 5, 4.3], 'Consumo este mes', 300.90),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.purpleAccent,
-        unselectedItemColor: Colors.white,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.alarm), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.insert_chart), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.info_outline), label: ''),
-        ],
-      ),
+
     );
   }
 }
