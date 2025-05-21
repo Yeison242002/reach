@@ -11,6 +11,15 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        title: const Row(
+        children: [
+         Text(
+          'Reach',
+          style: TextStyle(color: Colors.white),
+        ),
+         Icon(Icons.power, color: Colors.purpleAccent),
+         ],
+      ),
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle, color: Colors.white),

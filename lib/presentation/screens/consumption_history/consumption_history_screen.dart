@@ -83,13 +83,20 @@ class ConsumptionHistoryScreen extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: const Text('Historial',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        actions: const [
+        title: const Text(
+          'Historial',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.account_circle, color: Colors.white),
-          )
+            padding: const EdgeInsets.only(right: 16),
+            child: IconButton(
+              icon: const Icon(Icons.account_circle, color: Colors.white),
+              onPressed: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+            ),
+          ),
         ],
       ),
       body: Padding(
@@ -103,7 +110,6 @@ class ConsumptionHistoryScreen extends StatelessWidget {
           ],
         ),
       ),
-
     );
   }
 }

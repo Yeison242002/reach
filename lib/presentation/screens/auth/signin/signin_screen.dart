@@ -89,12 +89,12 @@ class _SignInScreenState extends State<SignInScreen> {
             child: Column(
               children: [
                 const Text(
-                  "Sign in",
+                  "Iniciar sesión",
                   style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 30),
-                _buildInputField(_nameController, Icons.person, "Enter your username"),
-                _buildInputField(_passwordController, Icons.lock, "Enter your password", obscureText: true),
+                _buildInputField(_nameController, Icons.person, "Introduce tu nombre de usuario"),
+                _buildInputField(_passwordController, Icons.lock, "Introduce tu contraseña", obscureText: true),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _signInUser,
@@ -105,16 +105,16 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("Sign in", style: TextStyle(color: Colors.white)),
+                      : const Text("Iniciar sesión", style: TextStyle(color: Colors.white)),
                 ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don't have an account?", style: TextStyle(color: Colors.white70)),
+                    const Text("¿No tienes una cuenta?", style: TextStyle(color: Colors.white70)),
                     TextButton(
                       onPressed: () => Navigator.pushNamed(context, '/signup'),
-                      child: const Text("Sign up", style: TextStyle(color: Colors.purpleAccent)),
+                      child: const Text("Regístrate", style: TextStyle(color: Colors.purpleAccent)),
                     ),
                   ],
                 )

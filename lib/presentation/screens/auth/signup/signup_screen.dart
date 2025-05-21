@@ -15,7 +15,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _emailPasswordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  //final TextEditingController _passwordController = TextEditingController();
 
   bool _isLoading = false;
 
@@ -27,7 +27,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final name = _nameController.text.trim();
   final email = _emailController.text.trim();
   final phone = _phoneController.text.trim();
-  final password = _passwordController.text.trim();
+  //final password = _passwordController.text.trim();
 
   try {
     // Verificar si el nombre de usuario ya existe
@@ -138,14 +138,14 @@ void _showErrorDialog(String message) {
             key: _formKey,
             child: Column(
               children: [
-                const Text("Sign up", style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
+                const Text("Regístrate", style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 30),
 
-                _buildInputField(_nameController, Icons.person, "Enter name"),
-                _buildInputField(_emailController, Icons.email, "Enter your email", keyboardType: TextInputType.emailAddress),
-                _buildInputField(_emailPasswordController, Icons.lock, "Enter your email password", obscureText: true),
-                _buildInputField(_phoneController, Icons.phone, "Enter your phone number", keyboardType: TextInputType.phone),
-                _buildInputField(_passwordController, Icons.lock_outline, "Enter your password", obscureText: true),
+                _buildInputField(_nameController, Icons.person, "Ingresa tu nombre"),
+                _buildInputField(_emailController, Icons.email, "Introduce tu correo electrónico", keyboardType: TextInputType.emailAddress),
+                _buildInputField(_emailPasswordController, Icons.lock, "Introduce tu contraseña", obscureText: true),
+                _buildInputField(_phoneController, Icons.phone, "Introduce tu número de teléfono", keyboardType: TextInputType.phone),
+                //_buildInputField(_passwordController, Icons.lock_outline, "Enter your password", obscureText: true),
 
                 const SizedBox(height: 20),
                 ElevatedButton(
@@ -157,17 +157,17 @@ void _showErrorDialog(String message) {
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("Sign up", style: TextStyle(color: Colors.white)),
+                      : const Text("Regístrate", style: TextStyle(color: Colors.white)),
                 ),
 
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Already registered?", style: TextStyle(color: Colors.white70)),
+                    const Text("¿Ya estás registrado?", style: TextStyle(color: Colors.white70)),
                     TextButton(
                       onPressed: () => Navigator.pushNamed(context, '/signin'),
-                      child: const Text("Sign in", style: TextStyle(color: Colors.purpleAccent)),
+                      child: const Text("Iniciar sesión", style: TextStyle(color: Colors.purpleAccent)),
                     ),
                   ],
                 )

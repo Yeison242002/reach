@@ -42,9 +42,12 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
         actions: [
-          IconButton(
+         IconButton(
             icon: const Icon(Icons.account_circle, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              // Navegar a perfil si quieres
+               Navigator.pushNamed(context, '/profile');
+            },
           ),
         ],
       ),
