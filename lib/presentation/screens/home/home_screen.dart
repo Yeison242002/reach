@@ -1,8 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import '../../../services/mqtt_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late MQTTService _mqttService;
+  final Map<String, bool> relayStates = {
+    'A': false,
+    'B': false,
+    'C': false,
+  };
+  double voltage = 0.0;
+
+  @override
+void initState() {
+  super.initState();
+  _mqttService = MQTTService();
+  _mqttService.connect().then((_) {
+    _mqttService.subscribeToVoltage((double v) {
+      setState(() {
+        voltage = v; // Actualiza el estado con el nuevo voltaje
+      });
+    });
+  });
+}
+
+
+
+  void toggleAllRelays() {
+    bool newState = !relayStates.values.every((v) => v);
+    relayStates.updateAll((key, value) => newState);
+
+    setState(() {});
+    _mqttService.publishRelay('relay/A', newState ? 'ON' : 'OFF');
+    _mqttService.publishRelay('relay/B', newState ? 'ON' : 'OFF');
+    _mqttService.publishRelay('relay/C', newState ? 'ON' : 'OFF');
+  }
+
+  void toggleRelay(String id) {
+    setState(() {
+      relayStates[id] = !(relayStates[id] ?? false);
+    });
+    _mqttService.publishRelay('relay/$id', relayStates[id]! ? 'ON' : 'OFF');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,21 +59,18 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Row(
-        children: [
-         Text(
-          'Reach',
-          style: TextStyle(color: Colors.white),
+          children: [
+            Text(
+              'Reach',
+              style: TextStyle(color: Colors.white),
+            ),
+            Icon(Icons.power, color: Colors.purpleAccent),
+          ],
         ),
-         Icon(Icons.power, color: Colors.purpleAccent),
-         ],
-      ),
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle, color: Colors.white),
-            onPressed: () {
-              // Navegar a perfil si quieres
-               Navigator.pushNamed(context, '/profile');
-            },
+            onPressed: () => Navigator.pushNamed(context, '/profile'),
           ),
         ],
       ),
@@ -42,9 +86,12 @@ class HomeScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.power_settings_new, color: Colors.purple),
-                  onPressed: () {},
-                )
+                  icon: Icon(
+                    Icons.power_settings_new,
+                    color: relayStates.values.every((v) => v) ? Colors.red : Colors.purple,
+                  ),
+                  onPressed: toggleAllRelays,
+                ),
               ],
             ),
             SizedBox(
@@ -62,24 +109,23 @@ class HomeScreen extends StatelessWidget {
                     ],
                     pointers: <GaugePointer>[
                       NeedlePointer(
-                        value: 156.09,
-                        needleColor: Colors.white, // Color de la aguja
-                        needleStartWidth: 0.5,       // Ancho inicial de la aguja
-                        needleEndWidth: 3,         // Ancho final de la aguja
-                        needleLength: 0.8,         // Longitud de la aguja (0 a 1)
-                      knobStyle: KnobStyle(
-                        knobRadius: 0.01,        // Radio del knob (círculo central)
-                        color: const Color.fromARGB(255, 121, 67, 108),     // Color del knob
-                        borderColor: Colors.white, // Borde del knob
-                        borderWidth: 0.1,          // Ancho del borde del knob
+                        value: 78.09,
+                        needleColor: Colors.white,
+                        needleStartWidth: 0.5,
+                        needleEndWidth: 3,
+                        needleLength: 0.8,
+                        knobStyle: KnobStyle(
+                          knobRadius: 0.01,
+                          color: Color.fromARGB(255, 121, 67, 108),
+                          borderColor: Colors.white,
+                          borderWidth: 0.1,
+                        ),
+                        tailStyle: TailStyle(
+                          color: Colors.white,
+                          length: 0.2,
+                          width: 3,
+                        ),
                       ),
-                      tailStyle: TailStyle(
-                        color: Colors.white,     // Color de la cola de la aguja
-                        length: 0.2,             // Longitud de la cola (0 a 1)
-                        width: 3,                // Ancho de la cola
-                    ),
-                    ),
-                      
                     ],
                     annotations: <GaugeAnnotation>[
                       GaugeAnnotation(
@@ -100,7 +146,7 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _circularGauge('vol', 130.4),
+                _circularGauge('vol', voltage),
                 _circularGauge('A', 4.67),
               ],
             ),
@@ -114,13 +160,12 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: ListView.builder(
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  return _outputTile('SALIDA (${String.fromCharCode(65 + index)})');
-                },
+              child: ListView(
+                children: ['A', 'B', 'C']
+                    .map((id) => _outputTile('SALIDA ($id)', id))
+                    .toList(),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -139,16 +184,16 @@ class HomeScreen extends StatelessWidget {
           ),
           alignment: Alignment.center,
           child: Text(
-            '$label\n$value',
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white),
-          ),
+  '$label\n${value.toStringAsFixed(2)}',
+  textAlign: TextAlign.center,
+  style: const TextStyle(color: Colors.white),
+),
         )
       ],
     );
   }
 
-  Widget _outputTile(String title) {
+  Widget _outputTile(String title, String id) {
     return Card(
       color: const Color(0xFF3A2F54),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -163,10 +208,15 @@ class HomeScreen extends StatelessWidget {
           style: TextStyle(color: Colors.purple),
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.power_settings_new, color: Colors.purple),
-          onPressed: () {},
+          icon: Icon(
+            Icons.power_settings_new,
+            color: relayStates[id]! ? Colors.red : Colors.purple,
+          ),
+          onPressed: () => toggleRelay(id),
         ),
       ),
     );
   }
+  
 }
+
