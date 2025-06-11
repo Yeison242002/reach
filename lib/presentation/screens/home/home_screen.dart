@@ -51,6 +51,7 @@ _mqttService.subscribeToOutputData(
   },
 );
   });
+  
 }
 
 
@@ -66,11 +67,13 @@ _mqttService.subscribeToOutputData(
   }
 
   void toggleRelay(String id) {
-    setState(() {
-      relayStates[id] = !(relayStates[id] ?? false);
-    });
-    _mqttService.publishRelay('relay/$id', relayStates[id]! ? 'ON' : 'OFF');
-  }
+  final newState = !(relayStates[id] ?? false);
+  setState(() {
+    relayStates[id] = newState;
+  });
+  _mqttService.publishRelay('relay/$id', newState ? 'ON' : 'OFF');
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +236,7 @@ Widget _outputTile(String title, String id) {
       ),
       subtitle: Text(
         'Watts: ${data['watts']!.toStringAsFixed(1)}    Vol: ${data['volts']!.toStringAsFixed(1)}    A: ${data['amps']!.toStringAsFixed(1)}',
-        style: const TextStyle(color: Colors.purple),
+        style: const TextStyle(color: Colors.white),  
       ),
       trailing: IconButton(
         icon: Icon(

@@ -125,7 +125,8 @@ Future<void> mostrarDialogoAgregarTimer(BuildContext context) async {
               final fechaFormateada =
                   '${fechaHora.day.toString().padLeft(2, '0')}/${fechaHora.month.toString().padLeft(2, '0')}/${fechaHora.year}';
               final horaFormateada =
-                  '${fechaHora.hour % 12 == 0 ? 12 : fechaHora.hour % 12}:${fechaHora.minute.toString().padLeft(2, '0')} ${fechaHora.hour >= 12 ? 'Pm' : 'Am'}';
+                  '${(fechaHora.hour % 12 == 0 ? 12 : fechaHora.hour % 12).toString().padLeft(2, '0')}:${fechaHora.minute.toString().padLeft(2, '0')} ${fechaHora.hour >= 12 ? 'PM' : 'AM'}';
+              
 
               final nuevoTimer = TimerModel(
                 salida: salida,
