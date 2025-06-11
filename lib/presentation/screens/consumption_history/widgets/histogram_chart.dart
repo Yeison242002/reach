@@ -56,7 +56,7 @@ class HistogramChart extends StatelessWidget {
                 titlesData: FlTitlesData(
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
-                      showTitles: true,
+                      showTitles: false,
                       getTitlesWidget: (value, meta) => Text(
                         '${value.toInt() + 1}',
                         style: const TextStyle(color: Colors.white70, fontSize: 10),

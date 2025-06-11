@@ -48,6 +48,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.access_alarm), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.info), label: ''),
+          
         ],
       ),
     );

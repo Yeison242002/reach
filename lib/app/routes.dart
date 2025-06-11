@@ -12,6 +12,6 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/home': (_) => const MainNavigationScreen(),
   '/hi': (_) => const MainNavigationScreen(),
   '/main': (_) => const MainNavigationScreen(), // Nuevo
-  '/consumption-history': (context) => const ConsumptionHistoryScreen(),
+  '/consumption-history': (context) => ConsumptionHistoryScreen(),
   '/profile': (context) => const UserProfileScreen(),
 };
