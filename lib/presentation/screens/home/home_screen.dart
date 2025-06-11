@@ -17,7 +17,16 @@ class _HomeScreenState extends State<HomeScreen> {
     'B': false,
     'C': false,
   };
+
+  Map<String, Map<String, double>> outputData = {
+  'A': {'watts': 0.0, 'volts': 0.0, 'amps': 0.0},
+  'B': {'watts': 0.0, 'volts': 0.0, 'amps': 0.0},
+  'C': {'watts': 0.0, 'volts': 0.0, 'amps': 0.0},
+};
+
   double voltage = 0.0;
+  double totalCurrent = 0.0;
+
 
   @override
 void initState() {
@@ -29,6 +38,18 @@ void initState() {
         voltage = v; // Actualiza el estado con el nuevo voltaje
       });
     });
+  _mqttService.subscribeToTotalCurrent((double current) {
+  setState(() {
+    totalCurrent = current;
+  });
+});
+_mqttService.subscribeToOutputData(
+  onData: (id, watts, volts, amps) {
+    setState(() {
+      outputData[id] = {'watts': watts, 'volts': volts, 'amps': amps};
+    });
+  },
+);
   });
 }
 
@@ -95,59 +116,65 @@ void initState() {
               ],
             ),
             SizedBox(
-              width: 190,
-              height: 190,
-              child: SfRadialGauge(
-                axes: <RadialAxis>[
-                  RadialAxis(
-                    minimum: 0,
-                    maximum: 150,
-                    ranges: <GaugeRange>[
-                      GaugeRange(startValue: 0, endValue: 50, color: Colors.green),
-                      GaugeRange(startValue: 50, endValue: 100, color: Colors.yellow),
-                      GaugeRange(startValue: 100, endValue: 150, color: Colors.red),
-                    ],
-                    pointers: <GaugePointer>[
-                      NeedlePointer(
-                        value: 78.09,
-                        needleColor: Colors.white,
-                        needleStartWidth: 0.5,
-                        needleEndWidth: 3,
-                        needleLength: 0.8,
-                        knobStyle: KnobStyle(
-                          knobRadius: 0.01,
-                          color: Color.fromARGB(255, 121, 67, 108),
-                          borderColor: Colors.white,
-                          borderWidth: 0.1,
-                        ),
-                        tailStyle: TailStyle(
-                          color: Colors.white,
-                          length: 0.2,
-                          width: 3,
-                        ),
-                      ),
-                    ],
-                    annotations: <GaugeAnnotation>[
-                      GaugeAnnotation(
-                        widget: Text(
-                          '78.09\nwatts',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                        angle: 90,
-                        positionFactor: 0.8,
-                      ),
-                    ],
-                  ),
-                ],
+  width: 190,
+  height: 190,
+  child: SfRadialGauge(
+    axes: <RadialAxis>[
+      RadialAxis(
+        minimum: 0,
+        maximum: 150, // Ajusta si esperas más consumo
+        ranges: <GaugeRange>[
+          GaugeRange(startValue: 0, endValue: 50, color: Colors.green),
+          GaugeRange(startValue: 50, endValue: 100, color: Colors.yellow),
+          GaugeRange(startValue: 100, endValue: 150, color: Colors.red),
+        ],
+        pointers: <GaugePointer>[
+          NeedlePointer(
+            value: (voltage * totalCurrent).clamp(0, 150),
+            needleColor: Colors.white,
+            needleStartWidth: 0.5,
+            needleEndWidth: 3,
+            needleLength: 0.8,
+            knobStyle: KnobStyle(
+              knobRadius: 0.01,
+              color: Color.fromARGB(255, 121, 67, 108),
+              borderColor: Colors.white,
+              borderWidth: 0.1,
+            ),
+            tailStyle: TailStyle(
+              color: Colors.white,
+              length: 0.2,
+              width: 3,
+            ),
+          ),
+        ],
+        annotations: <GaugeAnnotation>[
+          GaugeAnnotation(
+            widget: Text(
+              '${(voltage * totalCurrent).toStringAsFixed(2)}\nwatts',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
+            angle: 90,
+            positionFactor: 0.8,
+          ),
+        ],
+      ),
+    ],
+  ),
+),
+
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _circularGauge('vol', voltage),
-                _circularGauge('A', 4.67),
+                _circularGauge('A', totalCurrent),
+
               ],
             ),
             const SizedBox(height: 20),
@@ -192,31 +219,33 @@ void initState() {
       ],
     );
   }
+Widget _outputTile(String title, String id) {
+  final data = outputData[id]!;
 
-  Widget _outputTile(String title, String id) {
-    return Card(
-      color: const Color(0xFF3A2F54),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        title: Text(
-          title,
-          style: const TextStyle(color: Colors.white),
-        ),
-        subtitle: const Text(
-          'Watts: 45.8    Vol: 130.4    A: 3.8',
-          style: TextStyle(color: Colors.purple),
-        ),
-        trailing: IconButton(
-          icon: Icon(
-            Icons.power_settings_new,
-            color: relayStates[id]! ? Colors.red : Colors.purple,
-          ),
-          onPressed: () => toggleRelay(id),
-        ),
+  return Card(
+    color: const Color(0xFF3A2F54),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    child: ListTile(
+      title: Text(
+        title,
+        style: const TextStyle(color: Colors.white),
       ),
-    );
-  }
+      subtitle: Text(
+        'Watts: ${data['watts']!.toStringAsFixed(1)}    Vol: ${data['volts']!.toStringAsFixed(1)}    A: ${data['amps']!.toStringAsFixed(1)}',
+        style: const TextStyle(color: Colors.purple),
+      ),
+      trailing: IconButton(
+        icon: Icon(
+          Icons.power_settings_new,
+          color: relayStates[id]! ? Colors.red : Colors.purple,
+        ),
+        onPressed: () => toggleRelay(id),
+      ),
+    ),
+  );
+}
+
   
 }
 
