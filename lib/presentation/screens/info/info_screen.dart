@@ -21,19 +21,45 @@ class _InfoScreenState extends State<InfoScreen> {
   double estimadoMesWatts = 0;
   double estimadoMesCOP = 0;
 
-  final double costoKWh = 1228;
+  double costoKWh = 1228;
+  bool editingCosto = false;
+  final TextEditingController costoController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    cargarCostoKWh().then((_) => calcularEstadisticas());
+  }
+
+  Future<void> cargarCostoKWh() async {
+    final doc =
+        await FirebaseFirestore.instance
+            .collection('config')
+            .doc('costo_kwh')
+            .get();
+    if (doc.exists) {
+      setState(() {
+        costoKWh = (doc.data()?['valor'] ?? 1228).toDouble();
+      });
+    }
+  }
+
+  Future<void> guardarCostoKWh(double nuevoValor) async {
+    await FirebaseFirestore.instance.collection('config').doc('costo_kwh').set({
+      'valor': nuevoValor,
+    });
+    setState(() {
+      costoKWh = nuevoValor;
+      editingCosto = false;
+    });
     calcularEstadisticas();
   }
 
   Future<void> calcularEstadisticas() async {
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final firestore = FirebaseFirestore.instance;
     final now = DateTime.now();
-    final String fechaActual = DateFormat('yyyy-MM-dd').format(now);
-    final String mesActual = DateFormat('yyyy-MM').format(now);
+    final fechaActual = DateFormat('yyyy-MM-dd').format(now);
+    final mesActual = DateFormat('yyyy-MM').format(now);
 
     final snap =
         await firestore
@@ -68,7 +94,6 @@ class _InfoScreenState extends State<InfoScreen> {
     final costoSalidaB = (promedioB / 1000) * costoKWh;
     final costoSalidaC = (promedioC / 1000) * costoKWh;
 
-    // Promedio mensual
     final snapMes = await firestore.collection('consumo_diario').get();
     double sumaMes = 0;
     int diasConDatos = 0;
@@ -147,36 +172,77 @@ class _InfoScreenState extends State<InfoScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.black26,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Watts consumidos\ndía promedio:',
-                    style: TextStyle(color: Colors.white),
+            Row(
+              children: [
+                Expanded(
+                  child:
+                      editingCosto
+                          ? TextField(
+                            controller:
+                                costoController
+                                  ..text = costoKWh.toStringAsFixed(0),
+                            keyboardType: TextInputType.number,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: 'Costo kWh (COP)',
+                              labelStyle: TextStyle(color: Colors.white54),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.purpleAccent,
+                                ),
+                              ),
+                            ),
+                            onSubmitted: (value) {
+                              final nuevoCosto = double.tryParse(value);
+                              if (nuevoCosto != null) {
+                                guardarCostoKWh(nuevoCosto);
+                              }
+                            },
+                          )
+                          : Text(
+                            'Costo kWh: ${costoKWh.toStringAsFixed(0)} \$',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    editingCosto ? Icons.check : Icons.edit,
+                    color: Colors.purpleAccent,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${totalWattsDia.toStringAsFixed(2)}w',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      color: Colors.purpleAccent,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '${costoDia.toStringAsFixed(0)} \$',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
+                  onPressed: () {
+                    if (editingCosto) {
+                      final nuevoCosto = double.tryParse(costoController.text);
+                      if (nuevoCosto != null) {
+                        guardarCostoKWh(nuevoCosto);
+                      }
+                    } else {
+                      setState(() {
+                        editingCosto = true;
+                      });
+                    }
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 20),
+            Text(
+              'Promedio día total de hoy:',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              '${totalWattsDia.toStringAsFixed(2)} watts',
+              style: TextStyle(color: Colors.purpleAccent, fontSize: 20),
+            ),
+            Text(
+              'Costo estimado hoy: \$${costoDia.toStringAsFixed(2)} COP',
+              style: TextStyle(color: Colors.greenAccent, fontSize: 16),
+            ),
+            const SizedBox(height: 20),
+
             const Text(
               'Promedio diario individual',
               style: TextStyle(
